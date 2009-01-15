@@ -16,6 +16,12 @@ $L = array(
 "dc_templates" => "Templates",
 "dc_template_groups" => "Template Groups",
 
+"group"	=> "Group",
+"name" => "Name",
+
+"files_database" => "Files => Database",
+"database_files" => "Database => Files",
+
 //----------------------------------------
 
 // END
