@@ -14,6 +14,7 @@ $L = array(
 //----------------------------------------
 
 "dc_templates" => "Templates",
+"dc_template_groups" => "Template Groups",
 
 //----------------------------------------
 
