@@ -25,11 +25,12 @@ if ( ! defined('EXT')) { exit('Invalid file request'); }
 
 class Dc_template_updater_CP {
 
-	var $version		= '1.0';
+	var $version		= '0.9';
     var $module_name	= 'Dc_template_updater';
 	var $base			= '';
 	var $base_crumb		= '';
 	var $base_title		= '';
+	var $theme_path		= '';
 
 	// -------------------------
 	//	Constructor
@@ -37,13 +38,14 @@ class Dc_template_updater_CP {
 
 	function Dc_template_updater_CP($switch = TRUE)
 	{
-		global $IN, $DSP, $LANG;
+		global $IN, $DSP, $LANG, $PREFS;
 
 		// Base variables
 		
-		$this->base =		'C=modules'.AMP.'M='. $this->module_name .AMP;
-		$this->base_crumb =	$DSP->anchor(BASE.AMP.$this->base, $LANG->line('dc_template_updater_module_name'));
-		$this->base_title = $LANG->line('dc_template_updater_module_name');
+		$this->base			=	'C=modules'.AMP.'M='. $this->module_name .AMP;
+		$this->base_crumb	=	$DSP->anchor(BASE.AMP.$this->base, $LANG->line('dc_template_updater_module_name'));
+		$this->base_title	=	$LANG->line('dc_template_updater_module_name');
+		$this->theme_path	=	$PREFS->ini('theme_folder_url') . 'dc_template_updater/';
 
 		if ($switch)
 		{
@@ -126,7 +128,7 @@ class Dc_template_updater_CP {
 
         // Begin building the page output
 
-        $r = $DSP->qdiv('tableHeading', $LANG->line('dc_template_groups'));
+        $r = $DSP->qdiv('tableHeading', $LANG->line('dc_template_groups_filter'));
 
         // display message if available
         if ($message != '')
@@ -210,6 +212,7 @@ class Dc_template_updater_CP {
 		$r	.=	$DSP->qdiv('tableHeading', $LANG->line('dc_templates'));
         $r	.=	$DSP->table('tableBorder', '0', '', '100%').
 	            $DSP->tr().
+	            $DSP->table_qcell('tableHeadingAlt', '').
     	        $DSP->table_qcell('tableHeadingAlt', $LANG->line('group')).
         	    $DSP->table_qcell('tableHeadingAlt', $LANG->line('name')).
               	$DSP->table_qcell('tableHeadingAlt', $DSP->input_checkbox('toggleflag', '', '', "onclick=\"toggle(this);\"")).
@@ -236,15 +239,20 @@ class Dc_template_updater_CP {
 		foreach($query->result as $row)
 		{
 			$disabled = $row['save_template_file'] != 'y';
-			$cellClass = ($i++ % 2) ? 'tableCellOne' : 'tableCellTwo';
-			$spanClass = $disabled ? 'defaultLight' : 'default';
-			$checkBox = $DSP->input_checkbox('toggle[]', $row['template_id'], '', ' id="update_box_'.$row['template_id'].'"'. ($disabled ? ' disabled="disabled"' : ''));
+			
+			$cellClass	= ($i++ % 2) ? 'tableCellOne' : 'tableCellTwo';
+			$spanClass	= $disabled ? 'defaultLight' : 'default';
+			
+			$checkBox	= $DSP->input_checkbox('toggle[]', $row['template_id'], '', ' id="update_box_'.$row['template_id'].'"'. ($disabled ? ' disabled="disabled"' : ''));
+			$icon_text 	= ($disabled ? 'Not ' : ''). 'Saved As File';
+			$icon		= '<img src="'. $this->theme_path .'images/disk_black'. ($disabled ? '_disabled' : '') .'.png" alt="'. $icon_text .'" title="'. $icon_text .'" />';
 			
 			$r	.=	$DSP->table_row(
 						array(
+							array('text' => $icon, 'class' => $cellClass, 'width' => '2%'),
 							array('text' => $DSP->span($spanClass) . $row['group_name'] .$DSP->span_c(), 'class' => $cellClass, 'width' => '10%'),
 							array('text' => $DSP->span($spanClass) . $row['template_name'] .$DSP->span_c(), 'class' => $cellClass, 'width' => '80%'),
-							array('text' => $checkBox, 'class' => $cellClass, 'width' => '10%'),
+							array('text' => $checkBox, 'class' => $cellClass, 'width' => '8%'),
 						)
 					);
 		}
@@ -259,7 +267,7 @@ class Dc_template_updater_CP {
         $submit	.=	NBS.$DSP->input_select_header('action');
         
         $submit	.=	$DSP->input_select_option('files_database', $LANG->line('files_database')).
-        		$DSP->input_select_option('database_files', $LANG->line('database_files')).
+        		//$DSP->input_select_option('database_files', $LANG->line('database_files')).
         		$DSP->input_select_footer();
 
 		$r	.=	$DSP->table_row(
@@ -284,15 +292,39 @@ class Dc_template_updater_CP {
     {
     	global $DSP, $LANG, $DB, $PREFS, $IN;
     	
+    	// output variable
+    	
+    	$r = '';
+    	
     	// define magic constants for changeset array
     	
     	define('ID_INDEX', 		0);
     	define('NAME_INDEX', 	1);
     	define('GROUP_INDEX', 	2);
     	
+    	// trigger template update
     	
-    	// output variable
-    	$r = '';
+    	if ($template_ids = $IN->GBL('update', 'POST'))
+    	{	
+    		// Call update from files function
+
+    		$errors = $this->_update_from_files($template_ids);
+    		
+    		// No errors, redirect back to homepage
+    		
+    		if (empty($errors))
+    		{
+	    		return $this->updater_home($LANG->line('update_success'));
+    		}
+
+    		// Show errors else...  
+    		
+    		$r .=	$DSP->qdiv('tableHeading', $LANG->line('dc_templates_update'));
+  			$r .=	$DSP->qdiv('alert', $LANG->line('template_not_saved'));
+  		
+    		return $DSP->body = $r;
+
+    	}
     	
 /*
 		echo('<pre>');
@@ -327,29 +359,21 @@ class Dc_template_updater_CP {
         
         	foreach ($query->result as $row)
         	{
-				$basepath = $PREFS->ini('tmpl_file_basepath');
-
-				if ( ! ereg("/$", $basepath)) $basepath .= '/';
-
-				$basepath .= $row['group_name'].'/'.$row['template_name'].'.php';
-			
-				// Open Template File
-				
-				if ($file = $DSP->file_open($basepath))
-				{
-					$template_data_file = $file;
-					
+        		// Load file template contents
+        		
+        		if ($template_data_file = $this->_load_from_file($row['group_name'], $row['template_name']))
+        		{
 					// Compare DB version with File version
 					
 					if ($template_data_file != $row['template_data'])
 					{
 						$changeset[] =	array(
-											ID_INDEX	=>	$row['template_id'],
-											NAME_INDEX	=>	$row['template_name'],
-											GROUP_INDEX	=>	$row['group_name']
-										);
+							ID_INDEX		=>	$row['template_id'],
+							NAME_INDEX		=>	$row['template_name'],
+							GROUP_INDEX		=>	$row['group_name']
+						);
 					}
-				}
+        		}
         	}
         }
         
@@ -381,11 +405,6 @@ class Dc_template_updater_CP {
         $r .=	$DSP->qdiv('itemWrapper', $DSP->input_submit($LANG->line('update'))).
               		$DSP->div_c().
               	 	$DSP->form_close();
-
-		 
-		echo('<pre>');
-		print_r($changeset);
-		echo('</pre>');
 		
 		$DSP->body = $r;
     }
@@ -408,6 +427,120 @@ class Dc_template_updater_CP {
     	$r .=	$DSP->div_c();
     	
     	return $r;
+    }
+    
+    /**
+     * Updates the DB templates data based on the saved template files.
+     * The $_POST array must contain a set of valid template IDs.
+     */
+    function _update_from_files($template_ids)
+    {
+    	global $LOC, $SESS, $DB, $FNS;
+    	
+    	// Errors array
+    	
+    	$errors = array();
+    	
+    	// Check if the parameter is right
+		if (!is_array($template_ids) || empty($template_ids))
+		{
+			return $errors[] = 'The parameter to this function must contain a non-empty array of template ids.';
+		}
+		
+		// Loop through IDs
+			
+		foreach ($template_ids as $id)
+		{
+			// Get group and file name for the template id
+			
+			$query = $DB->query(
+				"SELECT t.template_name, t.template_notes, t.save_template_file, g.group_name
+				FROM exp_templates AS t
+				INNER JOIN exp_template_groups AS g 
+				ON t.group_id = g.group_id
+				WHERE t.template_id = '".$DB->escape_str($id)."'"
+			);
+			
+			if ($query->num_rows <= 0)
+			{
+				return $errors[] = 'Database query error when trying to load template from database.';
+			}
+			
+			// Get template data from file
+			
+			if ($template_data_file = $this->_load_from_file($query->row['group_name'], $query->row['template_name']))
+			{
+				/** -------------------------------   
+				/**  Save revision cache
+				/** -------------------------------*/
+				
+		        $data = array(
+					'tracker_id' 		=> '',
+					'item_id'    		=> $id,
+					'item_table'		=> 'exp_templates',
+					'item_field'		=> 'template_data',
+					'item_data'			=> $template_data_file,
+					'item_date'  		=> $LOC->now,
+					'item_author_id'	=> $SESS->userdata['member_id']
+				);
+				
+				$DB->query($DB->insert_string('exp_revision_tracker', $data));
+			
+				/** -------------------------------   
+				/**  Update Template in DB
+				/** -------------------------------*/
+				
+		        $DB->query(
+		        	$DB->update_string('exp_templates', 
+		        		array(
+		        			'template_data'			=>	$template_data_file,
+		        			'edit_date'				=>	$LOC->now,
+		        			'last_author_id'		=>	$SESS->userdata['member_id'],
+		        			'save_template_file'	=>	$query->row['save_template_file'],
+		        			'template_notes' 		=>	$query->row['template_notes']
+		        		),  "template_id = '$id'"
+		        	)
+		        ); 
+		        
+		        // Clear tag caching if we find the cache="yes" parameter in the template
+		        
+		        if (preg_match("#\s+cache=[\"']yes[\"']\s+#", stripslashes($template_data_file)))
+		        {
+		            $FNS->clear_caching('tag');
+		        }
+		        
+		        // Clear cache files
+		        
+		        $FNS->clear_caching('all');
+			}
+		}
+		
+    	return $errors;
+    }
+    
+    /**
+     * Loads the template with the given group and template name
+     * saved as a file and returns the content of the template or
+     * FALSE if the file could not be loaded.
+     */
+    function _load_from_file($group_name, $template_name)
+    {
+    	global $PREFS, $DSP;
+    	
+		$basepath = $PREFS->ini('tmpl_file_basepath');
+		
+		if ( ! ereg("/$", $basepath)) $basepath .= '/';
+		
+		$basepath .= $group_name.'/'.$template_name.'.php';
+		
+		// Open Template File
+		
+		if ($file = $DSP->file_open($basepath))
+		{
+			return $file;
+		}
+		
+		return false;
     }
 
 }

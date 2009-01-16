@@ -17,9 +17,11 @@ $L = array(
 "dc_templates_update" => "Update Templates",
 "dc_templates_no_changes" => "All database templates are in sync with the saved files.",
 "dc_template_groups" => "Template Groups",
+"dc_template_groups_filter" => "Filter by Template Groups",
 
 "update_template_confirm" => "The following template will be updated",
 "update_templates_confirm" => "The following templates will be updated",
+"update_success" => "All templates updated successfully.",
 
 "group"	=> "Group",
 "name" => "Name",
