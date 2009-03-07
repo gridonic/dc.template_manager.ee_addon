@@ -41,7 +41,7 @@ class Dc_template_manager {
 
 	var $name			= 'DC Template Manager Extension';
 	var $version		= DC_TEMPLATE_MGR_VERSION;
-	var $description	= 'Disables textareas in template editors for certain member groups.';
+	var $description	= 'Checks for updates of the DC Template Manager module.';
 	var $settings_exist = 'y';
 	var $docs_url		= DC_TEMPLATE_MGR_DOCS;
 

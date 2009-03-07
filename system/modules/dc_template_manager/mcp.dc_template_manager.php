@@ -24,7 +24,7 @@ if ( ! defined('EXT')) { exit('Invalid file request'); }
 
 class Dc_template_manager_CP {
 
-	var $version		= '0.9.4';
+	var $version		= '0.9.6';
     var $module_name	= 'Dc_template_manager';
 	var $base			= '';
 	var $base_crumb		= '';
