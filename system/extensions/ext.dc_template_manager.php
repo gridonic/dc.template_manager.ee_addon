@@ -27,7 +27,7 @@ if ( ! defined('EXT')) exit('Invalid file request');
 if (!defined('DC_TEMPLATE_MGR_VERSION'))
 {
 	define("DC_TEMPLATE_MGR_VERSION",	'0.9.6');	
-	define("DC_TEMPLATE_MGR_ID",		'DC Template Manager Extension');
+	define("DC_TEMPLATE_MGR_ID",		'DC Template Manager');
 	define("DC_TEMPLATE_MGR_DOCS",		'');
 }
 
@@ -39,7 +39,7 @@ class Dc_template_manager {
 
 	var $settings		= array();
 
-	var $name			= 'DC Template Manager Extension';
+	var $name			= 'DC Template Manager';
 	var $version		= DC_TEMPLATE_MGR_VERSION;
 	var $description	= 'Checks for updates of the DC Template Manager module.';
 	var $settings_exist = 'y';
@@ -63,7 +63,6 @@ class Dc_template_manager {
 
 		// hooks array
 		$hooks = array(
-			'show_full_control_panel_end'		=> 'disable_textarea',
 			'lg_addon_update_register_source'	=> 'lg_addon_update_register_source',
 			'lg_addon_update_register_addon'	=> 'lg_addon_update_register_addon'
 		);
@@ -188,28 +187,6 @@ class Dc_template_manager {
 								'name'		=> strtolower(get_class($this))
 							)
 					  );
-
-
-		// Open Table
-		$DSP->body .=	$DSP->table_open(array('class' => 'tableBorder', 'border' => '0', 'style' => 'margin-top:18px; width:100%'));
-					  
-		// Title and description
-		
-		$DSP->body .=	$DSP->table_row(array(array('text' => $LANG->line("template_editor_access"), 'class' => 'tableHeading', 'colspan' => '2')));
-		$DSP->body .=	$DSP->table_row(array(array('text' => $DSP->div('box', '', '', '', "style='border-width: 0 0 1px 0; margin: 0;'") .'<p>'. $LANG->line("exlude_members_description") .'</p>'. $DSP->div_c(), 'colspan' => '2')));
-						
-		// Exclude Members
-		
-		$DSP->body .=	$DSP->table_row(
-							array(
-								array('text' => 'Exclude members.', 'class' => 'tableCellOne', 'width' => '30%'),
-								array('text' => $DSP->input_text('exclude_members', ( ! isset($current['exclude_members'])) ? '' : implode(',', $current['exclude_members'])), 'class' => 'tableCellOne')
-							)
-						);
-						
-		// Close Table
-
-		$DSP->body .=	$DSP->table_close();
 						
 		// UPDATE SETTINGS
 		$DSP->body .=	$DSP->table_open(array('class' => 'tableBorder', 'border' => '0', 'style' => 'margin-top:18px; width:100%'));
@@ -265,8 +242,7 @@ class Dc_template_manager {
 	function _get_default_settings()
 	{
 		$settings = array(
-			'check_for_updates'	=> 'y',
-			'exclude_members'	=>	array()
+			'check_for_updates'	=> 'y'
 		);
 
 		return $settings;
@@ -306,73 +282,14 @@ class Dc_template_manager {
 		// load the settings
 		$settings = $this->_get_all_settings();
 		
-		// Compose exclude members array
-		$exclude_members = array();
-		
-		if(isset($_POST['exclude_members']))
-		{
-			$members = explode(',', $_POST['exclude_members']);
-			
-			foreach($members as $member)
-			{
-				if(is_numeric($member))
-				{
-					$exclude_members[] = $member;
-				}
-			}
-		}
-		
 		// Save new settings
 		$settings[$PREFS->ini('site_id')] = $this->settings = array(
-			'check_for_updates'	=> $_POST['check_for_updates'],
-			'exclude_members'	=> $exclude_members
+			'check_for_updates'	=> $_POST['check_for_updates']
 		);
 		
 		$DB->query("UPDATE exp_extensions SET settings = '". addslashes(serialize($settings)) ."' WHERE class = '" . get_class($this) . "'");
 	}
-	
-	/**
-	 * Allows content to be added to the output
-	 * Disables the template editor textarea for the selected member groups.
-	 *
-	 * @param	string	out		The content of the admin page to be outputted
-     * @since	0.9.5
-	 */
-	function disable_textarea($out)
-	{
-		global $IN, $SESS, $EXT, $DSP;
-		
-		// Check if there was a call to the same extension point before
 
-		$out = ($EXT->last_call !== FALSE) ? $EXT->last_call : $out;
-		
-		//	=============================================
-		//	Only Alter Weblog Preferences (on update too!)
-		//	=============================================
-		if($IN->GBL('C') != 'templates' || ($IN->GBL('M') != 'edit_template'))
-		{
-			return $out;
-		}
-		
-		if(isset($this->settings['exclude_members']) && in_array($SESS->userdata['member_id'], $this->settings['exclude_members']))
-		{
-			// Add disabled message
-			$message = $DSP->qdiv('box', $DSP->qdiv('alert', 'Your temlate editing rights have been disabled by the site administrator.'));
-			$content_div = "<div id='contentNB'>";
-			
-			$out = str_replace($content_div, $content_div . $message, $out);
-			
-		
-			// Disable textarea
-			$out = preg_replace("/textarea(.*)name='template_data'(.*)id='template_data'(.*)class='textarea'(.?)>/i", 'textarea' ."$1". "name='template_data'" ."$2". "id='template_data'" ."$3". "class='textarea'" ."$4". " readonly='readonly'>", $out);
-			
-			// Disable submit buttons
-			$out = preg_replace("/<input(.*)type='submit'(.*)\/>/i", "<input disabled='disabled' " . "$1" . "type='submit'" ."$2" .'/>', $out);
-		}
-				
-		return $out;
-	}
-	
 	/**
 	* Register a new Addon Source
 	*
