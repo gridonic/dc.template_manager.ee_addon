@@ -33,13 +33,10 @@
 =====
 
 -	Added extension as a module combo.
--	Added functionality to exclude selected members from being able to edit templates from the CP
 
 0.9.6
 =====
 
 -	Fixed an extension hook bug where this extension would ignore preceding extensions
 	accessing the same hook.
-	
--	Added an alert message for users with disabled template editing rights.
 -	Added LG Addon Updater support to the template manager extension.
