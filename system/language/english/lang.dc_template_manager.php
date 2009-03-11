@@ -45,7 +45,7 @@ $L = array(
 	"update_template_confirm"	=> 	"The following template will be updated",
 	"update_templates_confirm"	=> 	"The following templates will be updated",
 	
-	"revisions_message"			=> 	"The new contents of the template in the database will be saved as a new revision. You will not lose any of your former template data saved in the database.",
+	"revisions_message"			=> 	"The current contents of the template in the database will be saved as a new revision. You will not lose any of your former template data saved in the database.",
 	"overwrite_message"			=> 	"Existing template files will be overwritten with the template data from database. ".
 									"Templates not saved as file will be saved in a new file and the template setting <em>Save Template as File</em> will be set.",
 	"delete_message"			=>	"Template files in your templates directory will be deleted for the listed templates. ".
