@@ -27,7 +27,7 @@ $L = array(
 	//----------------------------------------
 	
 	"dc_template_manager_module_name"			=>	"DC Template Manager",
-	"dc_template_manager_module_description"	=>	"Bulk-Manages Templates in ExpressionEngine",
+	"dc_template_manager_module_description"	=>	"Bulk-manages Templates in ExpressionEngine",
 	
 	//----------------------------------------
 	// Required for MODULES page
@@ -74,8 +74,9 @@ $L = array(
 	'template_editor_access'		=> 'Template Editor Access',
 	'exlude_members_description'	=> 'Write the IDs of members for which the template editor in the control panel should be disabled. Please use the following format <b>3,19,7</b> (list of IDs separated by commas).',
 	'check_for_updates_title'		=> 'Check for DC Template Manager updates?',
-	'check_for_updates_info'		=> 'DC Template Manager can call home (<a href="http://www.designchuchi.ch">http://www.designchuchi.ch</a>) and check to see if the module / extension has been updated.',
+	'check_for_updates_info'		=> 'DC Template Manager can call home (<a href="http://www.designchuchi.ch">http://www.designchuchi.ch</a>) and check to see if the <b>module</b> or <b>extension</b> has been updated.',
 	'check_for_updates_label'		=> 'Would you like this extension to check for updates and display them on your CP homepage?',
+	'donate'						=> 'Donate',
 
 //----------------------------------------
 

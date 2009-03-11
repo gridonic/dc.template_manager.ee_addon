@@ -26,9 +26,9 @@ if ( ! defined('EXT')) exit('Invalid file request');
 // define constants
 if (!defined('DC_TEMPLATE_MGR_VERSION'))
 {
-	define("DC_TEMPLATE_MGR_VERSION",	'0.9.6');	
+	define("DC_TEMPLATE_MGR_VERSION",	'1.0.0');	
 	define("DC_TEMPLATE_MGR_ID",		'DC Template Manager');
-	define("DC_TEMPLATE_MGR_DOCS",		'');
+	define("DC_TEMPLATE_MGR_DOCS",		'http://www.designchuchi.ch/index.php/blog/comments/dc-template-manager');
 }
 
 /**
@@ -145,12 +145,6 @@ class Dc_template_manager {
 		// create a local variable for the site settings
 		$current = $this->_get_site_settings($current);
 		
-/*
-		echo('<pre>');
-		print_r($current);
-		echo('</pre>');
-*/
-		
 		global $DB, $DSP, $LANG, $IN;
 
 		// Breadcrumbs
@@ -162,17 +156,17 @@ class Dc_template_manager {
 						. $DSP->crumb_item($this->name);
 
 		$DSP->right_crumb($LANG->line('disable_extension'), BASE.AMP.'C=admin'.AMP.'M=utilities'.AMP.'P=toggle_extension_confirm'.AMP.'which=disable'.AMP.'name='.$IN->GBL('name'));
+		
+	    $DSP->body = '';
 
 		// Donations button
-/*
-		$DSP->body .= '<div style="float:right;">'
-						. '<a style="display:block; margin:-2px 10px 0 0; padding:5px 0 5px 70px; width:190px; height:15px; font-size:12px; line-height:15px;'
-						. ' background:url(http://brandon-kelly.com/images/shared/donations.png) no-repeat 0 0; color:#000; font-weight:bold;"'
-						. ' href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2181794" target="_blank">'
-						. $LANG->line('donate')
-						. '</a>'
-						. '</div>';
-*/
+	    $DSP->body .= '<div style="float:right;">'
+	                . '<a style="display:block; margin:0 10px 0 0; width:279px; height:27px; outline: none;'
+					. ' background: url(http://www.designchuchi.ch/images/shared/donate.gif) no-repeat 0 0; text-indent: -10000em;"'
+	                . ' href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=3885671" target="_blank">'
+	                . $LANG->line('donate')
+	                . '</a>'
+	                . '</div>';
 
 		// Form header
 		$DSP->body .= "<h1>{$this->name} <small>{$this->version}</small></h1>";
@@ -201,7 +195,7 @@ class Dc_template_manager {
 		
 		$DSP->body .=	$DSP->table_row(
 							array(
-								array('text' => $LANG->line("check_for_updates_label"), 'class' => 'tableCellOne', 'width' => '30%'),
+								array('text' => $DSP->qdiv('defaultBold', $LANG->line("check_for_updates_label")), 'class' => 'tableCellOne', 'width' => '30%'),
 								array('text' => $update_select, 'class' => 'tableCellOne')
 							)
 						);
