@@ -40,3 +40,10 @@
 -	Fixed an extension hook bug where this extension would ignore preceding extensions
 	accessing the same hook.
 -	Added LG Addon Updater support to the template manager extension.
+
+1.0.0
+=====
+
+-	Added donation button
+
+-	Fixed wording in some error messages
