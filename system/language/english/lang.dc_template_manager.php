@@ -76,7 +76,9 @@ $L = array(
 	'check_for_updates_title'		=> 'Check for DC Template Manager updates?',
 	'check_for_updates_info'		=> 'DC Template Manager can call home (<a href="http://www.designchuchi.ch">http://www.designchuchi.ch</a>) and check to see if the <b>module</b> or <b>extension</b> has been updated.',
 	'check_for_updates_label'		=> 'Would you like this extension to check for updates and display them on your CP homepage?',
+	
 	'donate'						=> 'Donate',
+	'donate_title'					=> 'This addon was developed by Designchuchi (www.designchuchi.ch). Please support the development if you use it.',
 
 //----------------------------------------
 

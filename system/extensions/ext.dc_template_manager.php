@@ -163,7 +163,8 @@ class Dc_template_manager {
 	    $DSP->body .= '<div style="float:right;">'
 	                . '<a style="display:block; margin:0 10px 0 0; width:279px; height:27px; outline: none;'
 					. ' background: url(http://www.designchuchi.ch/images/shared/donate.gif) no-repeat 0 0; text-indent: -10000em;"'
-	                . ' href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=3885671" target="_blank">'
+	                . ' href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=3885671"'
+					. ' title="'. $LANG->line('donate_title') .'" target="_blank">'
 	                . $LANG->line('donate')
 	                . '</a>'
 	                . '</div>';
