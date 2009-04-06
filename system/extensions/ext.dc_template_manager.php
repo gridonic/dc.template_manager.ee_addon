@@ -26,7 +26,7 @@ if ( ! defined('EXT')) exit('Invalid file request');
 // define constants
 if (!defined('DC_TEMPLATE_MGR_VERSION'))
 {
-	define("DC_TEMPLATE_MGR_VERSION",	'1.0.0');	
+	define("DC_TEMPLATE_MGR_VERSION",	'1.0.1');	
 	define("DC_TEMPLATE_MGR_ID",		'DC Template Manager');
 	define("DC_TEMPLATE_MGR_DOCS",		'http://www.designchuchi.ch/index.php/blog/comments/dc-template-manager');
 }
