@@ -705,7 +705,7 @@ class Dc_template_manager_CP {
 
 			$basepath = $PREFS->ini('tmpl_file_basepath');
 
-			if ( ! ereg("/$", $basepath)) $basepath .= '/';
+			if ( ! preg_match("#/$#", $basepath)) $basepath .= '/';
 
 			$basepath .= $query->row['group_name'].'/'.$query->row['template_name'].'.php';
 
@@ -736,7 +736,7 @@ class Dc_template_manager_CP {
 
 		$basepath = $PREFS->ini('tmpl_file_basepath');
 
-		if ( ! ereg("/$", $basepath)) $basepath .= '/';
+		if ( ! preg_match("#/$#", $basepath)) $basepath .= '/';
 
 		$basepath .= $group_name.'/'.$template_name.'.php';
 
@@ -891,7 +891,7 @@ class Dc_template_manager_CP {
    		$qs = ($PREFS->ini('force_query_string') == 'y') ? '' : '?';
 		$sitepath = $FNS->fetch_site_index(0, 0).$qs.'URL='.$FNS->fetch_site_index();
 
-        if ( ! ereg("/$", $sitepath))
+        if ( ! preg_match("#/$#", $sitepath))
         	$sitepath .= '/';
 
 		$viewurl = $sitepath;
